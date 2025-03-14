@@ -13,14 +13,14 @@ if (process.env.NODE_ENV === "development") {
 // Implementing CORS
 app.use(
   cors({
-    origin: "http://127.0.0.1:4200",
+    origin: "*",
   }),
 );
 
 app.options(
   "*",
   cors({
-    origin: "http://127.0.0.1:4200",
+    origin: "*",
   }),
 );
 
