@@ -256,18 +256,19 @@ export const getTopRatedMovies = async function (page = 1, lang = "en-US") {
 
 export const getMovieDetails = async function (movieID) {
   const response = await fetch(
-    `${process.env.TMDB_URL}/movie/${movieID}?append_to_response=images`,
+    `${process.env.TMDB_URL}/movie/${movieID}?append_to_response=videos`,
     options,
   );
 
   const data = await response.json();
 
-  const {
-    images: { posters },
-    ...details
-  } = data;
+  const videos = data.videos;
+
+  const trailers = videos.results.filter((res) => res.type === "Trailer");
+
+  delete data.videos;
 
   // console.log(details, posters);
 
-  return { ...details, posters };
+  return { ...data, trailers };
 };
