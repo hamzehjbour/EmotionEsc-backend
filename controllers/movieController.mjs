@@ -16,7 +16,7 @@ export const getRecommendations = async (req, res, next) => {
       data: recommendations,
     });
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
 
@@ -32,7 +32,7 @@ export const getPopular = async (req, res, next) => {
       data: topMovies,
     });
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
 
@@ -48,15 +48,16 @@ export const getTopRated = async (req, res, next) => {
       data: topMovies,
     });
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
 
 export const getDetails = async (req, res, next) => {
   try {
     // console.log(req.params);
+    const { lang } = req.query;
     const { id } = req.params;
-    const details = await getMovieDetails(id);
+    const details = await getMovieDetails(id, lang);
 
     // console.log(details);
 
@@ -65,6 +66,6 @@ export const getDetails = async (req, res, next) => {
       data: details,
     });
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };

@@ -1,3 +1,5 @@
+import AppError from "../utils/AppError.mjs";
+
 const headers = new Headers();
 headers.append("accept", "application/json");
 headers.append("Authorization", `Bearer ${process.env.TMDB_API_KEY} `);
@@ -165,7 +167,7 @@ const emotionToGenresMap = {
       "War",
       "Western",
     ],
-    sortBy: "primary_release_date.asc",
+    sortBy: "revenue.desc",
   },
   happy: {
     genres: [
@@ -189,7 +191,7 @@ const emotionToGenresMap = {
       "War",
       "Western",
     ],
-    sortBy: "title.desc",
+    sortBy: "revenue.desc",
   },
   surprised: {
     genres: [
@@ -222,18 +224,23 @@ export const getMovieRecommendations = async function (
   page = 1,
   lang = "en-US",
 ) {
-  let url = `${process.env.TMDB_URL}discover/movie?page=${page}&language=${lang}`;
+  const date = new Date().toISOString().split("T")[0];
+  let url = `${process.env.TMDB_URL}discover/movie?primary_release_date.gte=1970-01-01&primary_release_date.lte=${date}&page=${page}&language=${lang}`;
 
   if (em) {
-    const genres = emotionToGenresMap[em].genres;
-    const sortBy = emotionToGenresMap[em].sortBy;
+    const genres = emotionToGenresMap[em]?.genres;
+    const sortBy = emotionToGenresMap[em]?.sortBy;
+
+    if (!genres) {
+      throw new AppError("Sorry, we didn't recognize your emotions.", 400);
+    }
 
     /*
-  const ids = movieGenres
-    .map((movieGenre) => {
-      if (genres.includes(movieGenre.name)) return movieGenre.id;
-    })
-    .filter((id) => id !== undefined);
+     const ids = movieGenres
+        .map((movieGenre) => {
+          if (genres.includes(movieGenre.name)) return movieGenre.id;
+        })
+        .filter((id) => id !== undefined);
     */
 
     // More Readable and Maintainable approach
@@ -251,6 +258,15 @@ export const getMovieRecommendations = async function (
 
   const data = await response.json();
 
+  // console.log(data);
+
+  if (data.success !== undefined) {
+    const statusCode = data.status_code === 22 ? 400 : 500;
+    const message = data.status_message;
+
+    throw new AppError(message, statusCode);
+  }
+
   return data;
 };
 
@@ -261,6 +277,13 @@ export const getPopularMovies = async function (page = 1, lang = "en-US") {
   );
 
   const data = await response.json();
+
+  if (data.success !== undefined) {
+    const statusCode = data.status_code === 22 ? 400 : 500;
+    const message = data.status_message;
+
+    throw new AppError(message, statusCode);
+  }
 
   return data;
 };
@@ -273,16 +296,30 @@ export const getTopRatedMovies = async function (page = 1, lang = "en-US") {
 
   const data = await response.json();
 
+  if (data.success !== undefined) {
+    const statusCode = data.status_code === 22 ? 400 : 500;
+    const message = data.status_message;
+
+    throw new AppError(message, statusCode);
+  }
+
   return data;
 };
 
-export const getMovieDetails = async function (movieID) {
+export const getMovieDetails = async function (movieID, lang = "en-US") {
   const response = await fetch(
     `${process.env.TMDB_URL}/movie/${movieID}?append_to_response=videos`,
     options,
   );
 
   const data = await response.json();
+
+  if (data.success !== undefined) {
+    const statusCode = data.status_code === 34 ? 404 : 500;
+    const message = "We couldn't find the movie you requested";
+
+    throw new AppError(message, statusCode);
+  }
 
   const videos = data.videos;
 
