@@ -1,11 +1,9 @@
 import express from "express";
+import { getTodaysTopMusicController } from "../controllers/musicController.mjs";
 
 const router = express.Router();
 
-/**
- * TODO:
- *
- * Implement Routes for music recommendation and for todays top music
- */
+// Define the route for today's top music
+router.get("/todays-top-music", getTodaysTopMusicController);
 
 export default router;

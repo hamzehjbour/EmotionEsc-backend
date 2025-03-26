@@ -31,4 +31,40 @@ export const getAccessToken = async function () {
 };
 
 export const getMusicRecommendation = async function () {};
-export const getTodaysTopMusic = async function () {};
+
+// Function to fetch today's top music from Spotify
+export const getTodaysTopMusic = async function (page = 1) {
+  if (page < 0 || !parseInt(page)) {
+    throw new AppError("Invalid Page Number", 400);
+  }
+  const limit = 10;
+  const offset = (page - 1) * limit;
+  const response = await fetch(
+    `${process.env.SPOTIFY_URL}/playlists/5ABHKGoOzxkaa28ttQV9sE/tracks?limit=${limit}&offset=${offset}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+  const data = await response.json();
+  const tracks = data.items.map(({ track }) => ({
+    name: track.name,
+    duration_ms: track.duration_ms,
+    uri: track.uri,
+    artist: track.artists[0]?.name,
+    images: track.album.images,
+  }));
+
+  if (data.error) {
+    const statusCode = data.error.status || 500;
+    const message = data.error.message || "Failed to fetch top music";
+
+    throw new AppError(message, statusCode); // Throw an error
+  }
+
+  return tracks;
+};
