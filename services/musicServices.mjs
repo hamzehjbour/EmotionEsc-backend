@@ -12,9 +12,8 @@ const emotionToGenresMap = {
   fearful: ["ambient", "experimental", "soundtrack"],
   disgusted: ["industrial", "hardcore"],
   surprised: ["electronic", "alternative"],
-  neutral: ["classical", "jazz", "chill"]
+  neutral: ["classical", "jazz", "chill"],
 };
-
 
 export const getAccessToken = async function () {
   try {
@@ -40,45 +39,84 @@ export const getAccessToken = async function () {
   }
 };
 
-export const getMusicRecommendation = async function (em="happy",page=1) {
-  
+export const getMusicRecommendation = async function (em = "happy", page = 1) {
   if (!emotionToGenresMap[em]) {
     throw new AppError("Can't recognize your emotion ", 400);
   }
-  if ( page < 1 || !parseInt(page)) {
+  if (page < 1 || !parseInt(page)) {
     throw new AppError("Invalid page number", 400);
   }
-  const limit=10;
+
   const genre = emotionToGenresMap[em].join(",");
-  const offset=(page-1)*limit;
-  const url = new URL(`${process.env.SPOTIFY_URL}/search?q=${genre}&type=track&limit=${limit}&offset=${offset}`);
+
+  const limit = 10;
+  const offset = (page - 1) * limit;
+  const url = new URL(
+    `${process.env.SPOTIFY_URL}/search?q=${genre}&type=track&limit=${limit}&offset=${offset}`,
+  );
 
   const res = await fetch(url, {
-      method: "GET",
-      headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-      },
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
   });
 
   if (!res.ok) {
-      throw new AppError("Failed to fetch music recommendations", res.status);
+    throw new AppError("Failed to fetch music recommendations", res.status);
   }
 
   const data = await res.json();
-  
+
   if (!data.tracks || !data.tracks.items) {
-      throw new AppError("Invalid track data format", 500);
+    throw new AppError("Invalid track data format", 500);
   }
 
-  return data.tracks.items.map(track => ({
-      duration_ms: track.duration_ms,
-      id: track.id,
-      name: track.name,
-      uri: track.uri,
-      artists: track.album.artists.map(artist => artist.name), 
-      images: track.album. images
+  return data.tracks.items.map((track) => ({
+    duration_ms: track.duration_ms,
+    id: track.id,
+    name: track.name,
+    uri: track.uri,
+    artists: track.album.artists.map((artist) => artist.name),
+    images: track.album.images,
   }));
 };
 
-export const getTodaysTopMusic = async function () {};
+export const getTodaysTopMusic = async function (page = 1) {
+  if (page < 0 || !parseInt(page)) {
+    throw new AppError("Invalid Page Number", 400);
+  }
+
+  const limit = 10;
+  const offset = (page - 1) * limit;
+
+  const response = await fetch(
+    `${process.env.SPOTIFY_URL}/playlists/5ABHKGoOzxkaa28ttQV9sE/tracks?limit=${limit}&offset=${offset}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+  const data = await response.json();
+  const tracks = data.items.map(({ track }) => ({
+    name: track.name,
+    duration_ms: track.duration_ms,
+    uri: track.uri,
+    artist: track.artists[0]?.name,
+    images: track.album.images,
+  }));
+
+  if (data.error) {
+    const statusCode = data.error.status || 500;
+    const message = data.error.message || "Failed to fetch top music";
+
+    throw new AppError(message, statusCode); // Throw an error
+  }
+
+  return tracks;
+};
