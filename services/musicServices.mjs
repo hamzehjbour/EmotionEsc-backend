@@ -73,7 +73,7 @@ export const getMusicRecommendation = async function (em = "happy", page = 1) {
     throw new AppError("Invalid track data format", 500);
   }
 
-  return data.tracks.items.map((track) => ({
+  const tracks = data.tracks.items.map((track) => ({
     duration_ms: track.duration_ms,
     id: track.id,
     name: track.name,
@@ -81,6 +81,8 @@ export const getMusicRecommendation = async function (em = "happy", page = 1) {
     artists: track.album.artists.map((artist) => artist.name),
     images: track.album.images,
   }));
+
+  return { accessToken, tracks };
 };
 
 export const getTodaysTopMusic = async function (page = 1) {
@@ -107,7 +109,7 @@ export const getTodaysTopMusic = async function (page = 1) {
     name: track.name,
     duration_ms: track.duration_ms,
     uri: track.uri,
-    artist: track.artists[0]?.name,
+    artists: track.artists[0]?.name,
     images: track.album.images,
   }));
 
@@ -118,5 +120,5 @@ export const getTodaysTopMusic = async function (page = 1) {
     throw new AppError(message, statusCode); // Throw an error
   }
 
-  return tracks;
+  return { accessToken, tracks };
 };
