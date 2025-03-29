@@ -109,7 +109,7 @@ export const getTodaysTopMusic = async function (page = 1) {
     name: track.name,
     duration_ms: track.duration_ms,
     uri: track.uri,
-    artists: track.artists[0]?.name,
+    artists: track.album.artists.map((artist) => artist.name),
     images: track.album.images,
   }));
 
