@@ -595,8 +595,9 @@ const createSendToken = (user, statusCode, res, message) => {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000,
     ),
-
     httpOnly: true,
+    secure: false,
+    sameSite: "Lax",
   });
 
   res.status(statusCode).json({
@@ -690,7 +691,7 @@ export const verify = async (req, res, next) => {
       );
     }
 
-    if (pendingUser.codeExpiresAt < new Date()) {
+    if (pendingUser.codeExpiresAt < Date().now) {
       throw new AppError(
         "Your code have expired please request a new one",
         401,
