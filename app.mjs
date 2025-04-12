@@ -22,7 +22,7 @@ app.use(express.json());
 // Implementing CORS
 app.use(
   cors({
-    origin: "http://localhost:4200",
+    origin: "https://localhost:4200",
     credentials: true,
   }),
 );
