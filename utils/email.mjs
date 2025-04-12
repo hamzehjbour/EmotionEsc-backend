@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 
 const sendMail = async (options) => {
   try {
-    console.log("Sending email to:", options.email);
+    // console.log("Sending email to:", options.email);
 
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
@@ -22,9 +22,9 @@ const sendMail = async (options) => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent:", info.messageId);
+    // console.log("Email sent:", info.messageId);
   } catch (error) {
-    console.error("Failed to send email:", error);
+    // console.error("Failed to send email:", error);
     throw error;
   }
 };

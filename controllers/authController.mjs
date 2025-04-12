@@ -735,7 +735,7 @@ export const resend = async (req, res, next) => {
     const pendingUser = await PendingSignup.findOne({ email });
 
     const newtwoFACode = pendingUser.generate2FA();
-    const newExpire = Date.now() + 1 * 60 * 1000;
+    const newExpire = Date.now() + 5 * 60 * 1000;
 
     pendingUser.twoFACode = newtwoFACode;
     pendingUser.codeExpiresAt = newExpire;
