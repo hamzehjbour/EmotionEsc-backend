@@ -603,6 +603,7 @@ const createSendToken = (user, statusCode, res, message) => {
     status: "success",
     data: {
       message,
+      user,
     },
   });
 };
@@ -718,6 +719,8 @@ export const verify = async (req, res, next) => {
       message,
       html,
     });
+
+    newUser.password = undefined;
 
     createSendToken(newUser, 200, res, "Your account was created successfully");
   } catch (err) {
