@@ -603,6 +603,7 @@ const createSendToken = (user, statusCode, res, message) => {
 
   res.status(statusCode).json({
     status: "success",
+    token,
     data: {
       message,
       user,
@@ -613,7 +614,12 @@ const createSendToken = (user, statusCode, res, message) => {
 export const protect = async (req, res, next) => {
   try {
     let token;
-    if (req.cookies.jwt) {
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
+    } else if (req.cookies.jwt) {
       token = req.cookies.jwt;
     }
 
