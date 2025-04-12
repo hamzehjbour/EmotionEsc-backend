@@ -30,7 +30,7 @@ app.use(
 app.options(
   "*",
   cors({
-    origin: "http://localhost:4200",
+    origin: "https://localhost:4200",
     credentials: true,
   }),
 );
