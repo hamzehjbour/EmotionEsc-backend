@@ -4,7 +4,11 @@ import {
   getMusicRecommendations,
 } from "../controllers/musicController.mjs";
 
+import { protect } from "../controllers/authController.mjs";
+
 const router = express.Router();
+
+router.use(protect);
 
 // Define the route for today's top music
 router.get("/todays-top-music", getTodaysTopMusicController);

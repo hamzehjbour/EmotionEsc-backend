@@ -6,7 +6,11 @@ import {
   getDetails,
 } from "../controllers/movieController.mjs";
 
+import { protect } from "../controllers/authController.mjs";
+
 const router = express.Router();
+
+router.use(protect);
 
 router
   .get("/get-movie-recommendation", getRecommendations)
