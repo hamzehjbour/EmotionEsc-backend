@@ -597,6 +597,7 @@ const createSendToken = (user, statusCode, res, message) => {
     ),
     httpOnly: true,
     secure: false,
+    domain: "localhost",
     sameSite: "None",
   });
 
