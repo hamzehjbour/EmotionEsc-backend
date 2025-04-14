@@ -589,7 +589,7 @@ const signToken = (id) => {
 const createSendToken = (user, statusCode, res, message) => {
   const token = signToken(user._id);
 
-  // console.log(token);
+  console.log(token);
 
   res.cookie("jwt", token, {
     expires: new Date(
@@ -766,6 +766,28 @@ export const resend = async (req, res, next) => {
         message: "new code has been sent",
       },
     });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      throw new AppError("Please provide email and password!", 400);
+    }
+
+    const user = await User.findOne({ email }).select("+password");
+
+    console.log(user);
+
+    if (!user || !(await user.comparePasswords(password, user.password))) {
+      throw new AppError("Incorrect email or password", 401);
+    }
+
+    createSendToken(user, 200, res, "Logged in successfully");
   } catch (err) {
     next(err);
   }

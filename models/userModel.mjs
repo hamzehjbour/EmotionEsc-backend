@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
   fullName: {
@@ -15,6 +16,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "You must have a password"],
+    select: false,
   },
 
   linkToSpotify: {
@@ -22,6 +24,13 @@ const userSchema = new mongoose.Schema({
     default: false,
   },
 });
+
+userSchema.methods.comparePasswords = async function (
+  plainPassword,
+  storedPassword,
+) {
+  return await bcrypt.compare(plainPassword, storedPassword);
+};
 
 const User = mongoose.model("User", userSchema);
 
