@@ -29,10 +29,10 @@ const server = app.listen(port, () => {
 //   });
 // });
 
-// process.on("SIGTERM", () => {
-//   console.log("👋SIGTERM Received. Shutting down");
+process.on("SIGTERM", () => {
+  console.log("👋SIGTERM Received. Shutting down");
 
-//   server.close(() => {
-//     console.log("💥 Process terminated");
-//   });
-// });
+  server.close(() => {
+    console.log("💥 Process terminated");
+  });
+});

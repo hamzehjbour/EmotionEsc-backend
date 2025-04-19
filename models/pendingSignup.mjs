@@ -11,7 +11,7 @@ const pendingSignupSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: true,
+      required: [true, "You must provide your email"],
       unique: true,
       lowercase: true,
       trim: true,
