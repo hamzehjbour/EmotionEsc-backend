@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 import nodemailer from "nodemailer";
 
 const sendMail = async (options) => {
