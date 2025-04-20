@@ -755,8 +755,8 @@ const htmlResetTemplate = `
 														<table class="button_block block-1" width="100%" border="0" cellpadding="10" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
 															<tr>
 																<td class="pad">
-																	<div class="alignment" align="center"><a href="http://127.0.0.1:4200/reset/{{RESET_TOKEN}}" target="_blank" style="color:#ffffff;text-decoration:none;"><!--[if mso]>
-	<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"  href="http://127.0.0.1:4200/reset/d868690d2fd3d3454ff22830dbbf80b56acc0809edf80f0f65fbdf3eac5ec05f"  style="height:42px;width:182px;v-text-anchor:middle;" arcsize="10%" fillcolor="#7747FF">
+																	<div class="alignment" align="center"><a href="https://localhost:4200/reset?token={{RESET_TOKEN}}" target="_blank" style="color:#ffffff;text-decoration:none;"><!--[if mso]>
+	<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"  href="https://localhost:4200/reset?token={{RESET_TOKEN}}"  style="height:42px;width:182px;v-text-anchor:middle;" arcsize="10%" fillcolor="#7747FF">
 	<v:stroke dashstyle="Solid" weight="0px" color="#7747FF"/>
 	<w:anchorlock/>
 	<v:textbox inset="0px,0px,0px,0px">
@@ -1102,6 +1102,7 @@ export const forgetPassword = async (req, res, next) => {
     }
 
     const resetToken = user.generateResetToken();
+    const encodedToken = encodeURIComponent(resetToken);
     // const url = `http://127.0.0.1:4200/reset/${resetToken}`;
     const message = `Your password reset url`;
 
@@ -1109,7 +1110,7 @@ export const forgetPassword = async (req, res, next) => {
 
     const html = htmlResetTemplate
       .replace("{{NAME}}", user.fullName.split(" ").at(0))
-      .replace("{{RESET_TOKEN}}", resetToken);
+      .replaceAll("{{RESET_TOKEN}}", encodedToken);
 
     await sendMail({
       email: req.body.email,
