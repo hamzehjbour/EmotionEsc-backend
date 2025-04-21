@@ -3,6 +3,13 @@ import mongoose from "mongoose";
 import app from "./app.mjs";
 import { getAccessToken } from "./services/musicServices.mjs";
 
+process.on("uncaughtException", (err) => {
+  console.error("UNCAUGHTEXCEPTION! 💥 Shutting down...");
+  console.error(err.name, err.message);
+
+  process.exit(1);
+});
+
 const port = process.env.PORT || 3000;
 
 getAccessToken();
@@ -20,19 +27,19 @@ const server = app.listen(port, () => {
   console.log(`App running on port ${port}`);
 });
 
-// process.on("unhandledRejection", (err) => {
-//   console.error("UNHANDLED REJECTION 💥 Shutting down...");
-//   console.error(err.name, err.message);
-
-//   server.close(() => {
-//     process.exit(1);
-//   });
-// });
-
-process.on("SIGTERM", () => {
-  console.log("👋SIGTERM Received. Shutting down");
+process.on("unhandledRejection", (err) => {
+  console.error("UNHANDLED REJECTION 💥 Shutting down...");
+  console.error(err.name, err.message);
 
   server.close(() => {
-    console.log("💥 Process terminated");
+    process.exit(1);
   });
 });
+
+// process.on("SIGTERM", () => {
+//   console.log("👋SIGTERM Received. Shutting down");
+
+//   server.close(() => {
+//     console.log("💥 Process terminated");
+//   });
+// });
