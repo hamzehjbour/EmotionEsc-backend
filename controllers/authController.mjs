@@ -1178,3 +1178,29 @@ export const updateMyPassword = async (req, res, next) => {
     return next(err);
   }
 };
+
+export const editProfile = async (req, res, next) => {
+
+	
+	if (req.body.password || req.body.confirmPassword) {
+	  return next(new AppError('Please use update my password route', 400));
+	}
+
+	const newbody=filterObj(req.body,"fullName","email");
+	  const updatedUser = await User.findByIdAndUpdate(req.user.id,newbody,{new:true,runValidators:true});
+
+  
+	res.status(200).json({
+	  status: "success",
+	  data: {
+		user: updatedUser
+	  }
+	});
+  };
+	const filterObj = (obj, ...allowedFields) => {
+		const newObj = {};
+		Object.keys(obj).forEach(el => {
+		  if (allowedFields.includes(el)) newObj[el] = obj[el];
+		});
+		return newObj;
+	  };

@@ -8,6 +8,7 @@ import {
   resetPassword,
   updateMyPassword,
   protect,
+  editProfile, 
 } from "../controllers/authController.mjs";
 
 const router = express.Router();
@@ -18,7 +19,8 @@ router
   .post("/signup/start", start)
   .post("/signup/verify", verify)
   .post("/login", login)
-  .post("/forget-password", forgetPassword);
+  .post("/forget-password", forgetPassword)
+  .post("/edit-profile", protect, editProfile);
 
 router
   .patch("/reset-password/:token", resetPassword)
