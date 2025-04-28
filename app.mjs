@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import movieRouter from "./routes/movieRoutes.mjs";
 import musicRouter from "./routes/musicRoutes.mjs";
 import authRouter from "./routes/authRoutes.mjs";
+import libraryRouter from "./routes/libraryRoutes.mjs";
 import globalErrorHandler from "./controllers/errorController.mjs";
 
 const app = express();
@@ -38,6 +39,7 @@ app.options(
 // Compress responses
 app.use(compression());
 
+app.use("/api/v1/library", libraryRouter);
 app.use("/api/v1/movies", movieRouter);
 app.use("/api/v1/music", musicRouter);
 app.use("/api/v1/auth", authRouter);
