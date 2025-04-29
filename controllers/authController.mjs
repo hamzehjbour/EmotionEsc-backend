@@ -6,6 +6,14 @@ import User from "../models/userModel.mjs";
 import AppError from "../utils/AppError.mjs";
 import sendMail from "../utils/email.mjs";
 
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+  Object.keys(obj).forEach((el) => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
+  });
+  return newObj;
+};
+
 const html2FATemplate = `
 <!DOCTYPE html>
 <html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" lang="en">
@@ -1196,11 +1204,4 @@ export const editProfile = async (req, res, next) => {
       user: updatedUser,
     },
   });
-};
-const filterObj = (obj, ...allowedFields) => {
-  const newObj = {};
-  Object.keys(obj).forEach((el) => {
-    if (allowedFields.includes(el)) newObj[el] = obj[el];
-  });
-  return newObj;
 };

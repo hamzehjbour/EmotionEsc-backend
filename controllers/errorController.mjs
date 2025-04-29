@@ -58,14 +58,15 @@ export default (err, req, res, next) => {
   if (process.env.NODE_ENV === "development") {
     sendErrorDev(err, res);
   } else {
-    let error;
+    // let error = {...err}
+    let error = Object.create(err);
 
-    if (err.name === "CastError") error = handleCastErrorDB(err);
-    else if (err.name === "ValidationError")
-      error = handleValidationErrorDB(err);
-    else if (err.name === "JsonWebTokenError") error = handleJwtError(err);
-    else if (err.name === "TokenExpiredError") error = handleExpiredJwt(err);
-    else if (err.code === 11000) error = handleDuplicateFieldsDB(err);
+    if (error.name === "CastError") error = handleCastErrorDB(error);
+    else if (error.code === 11000) error = handleDuplicateFieldsDB(error);
+    else if (error.name === "ValidationError")
+      error = handleValidationErrorDB(error);
+    else if (error.name === "JsonWebTokenError") error = handleJwtError();
+    else if (error.name === "TokenExpiredError") error = handleExpiredJwt();
 
     sendErrorProd(error, res);
   }
