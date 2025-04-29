@@ -65,7 +65,7 @@ export const getItems = async (req, res, next) => {
       const message = search
         ? `We haven't found ${search} in your ${item}s library`
         : `No ${item}s in your library`;
-      throw new AppError(message, 404);
+      throw new AppError(message, 200);
     }
 
     res.status(200).json({
