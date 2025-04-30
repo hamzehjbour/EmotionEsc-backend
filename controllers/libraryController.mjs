@@ -9,16 +9,24 @@ const checkType = (type) => {
 
 export const addItem = async (req, res, next) => {
   try {
-    const { _id, itemType, title, artistOrDirector, releaseDate } = req.body;
+    const {
+      itemId,
+      itemType,
+      itemImage,
+      title,
+      artistOrDirector,
+      releaseDate,
+    } = req.body;
 
     if (!checkType(itemType)) {
       throw new AppError("Invalid item type. Must be song or movie", 400);
     }
 
     const item = await Library.create({
-      _id,
       user: req.user.id,
+      itemId,
       itemType,
+      itemImage,
       title,
       artistOrDirector,
       releaseDate,
@@ -36,6 +44,8 @@ export const addItem = async (req, res, next) => {
   } catch (err) {
     if (err.code === 11000)
       return next(new AppError("Item already exists in your library", 200));
+
+    return next(err);
   }
 };
 
@@ -86,7 +96,7 @@ export const getItems = async (req, res, next) => {
 export const removeItem = async (req, res, next) => {
   try {
     const item = await Library.findOneAndDelete({
-      _id: req.params.id,
+      itemId: req.params.id,
       user: req.user.id,
     });
 

@@ -82,7 +82,7 @@ export const getMusicRecommendation = async function (em = "happy", page = 1) {
     images: track.album.images,
   }));
 
-  return { accessToken, tracks };
+  return { tracks };
 };
 
 export const getTodaysTopMusic = async function (page = 1) {
@@ -120,5 +120,5 @@ export const getTodaysTopMusic = async function (page = 1) {
     throw new AppError(message, statusCode); // Throw an error
   }
 
-  return { accessToken, tracks };
+  return { tracks };
 };
