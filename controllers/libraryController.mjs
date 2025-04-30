@@ -24,15 +24,18 @@ export const addItem = async (req, res, next) => {
       releaseDate,
     });
 
+    const message = `Added to Favorite ${item.itemType === "song" ? "Songs" : "Movies"}`;
+
     res.status(201).json({
       status: "success",
       data: {
+        message,
         item,
       },
     });
   } catch (err) {
     if (err.code === 11000)
-      return next(new AppError("Item already exists in your library", 400));
+      return next(new AppError("Item already exists in your library", 200));
   }
 };
 

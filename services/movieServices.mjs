@@ -232,7 +232,7 @@ export const getMovieRecommendations = async function (
     const sortBy = emotionToGenresMap[em]?.sortBy;
 
     if (!genres) {
-      throw new AppError("Sorry, we didn't recognize your emotions.", 400);
+      throw new AppError("Sorry, we didn't recognize your emotions.", 200);
     }
 
     /*

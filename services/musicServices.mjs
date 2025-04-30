@@ -41,9 +41,9 @@ export const getAccessToken = async function () {
 
 export const getMusicRecommendation = async function (em = "happy", page = 1) {
   if (!emotionToGenresMap[em]) {
-    throw new AppError("Can't recognize your emotion ", 400);
+    throw new AppError("Can't recognize your emotion ", 200);
   }
-  if (page < 1 || !parseInt(page)) {
+  if (page < 1 || !parseInt(page, 10)) {
     throw new AppError("Invalid page number", 400);
   }
 
@@ -86,7 +86,7 @@ export const getMusicRecommendation = async function (em = "happy", page = 1) {
 };
 
 export const getTodaysTopMusic = async function (page = 1) {
-  if (page < 0 || !parseInt(page)) {
+  if (page < 0 || !parseInt(page, 10)) {
     throw new AppError("Invalid Page Number", 400);
   }
 
