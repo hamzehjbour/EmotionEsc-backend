@@ -79,3 +79,27 @@ export const getItems = async (req, res, next) => {
     next(err);
   }
 };
+
+export const removeItem = async (req, res, next) => {
+  try {
+    const item = await Library.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user.id,
+    });
+
+    if (!item) {
+      throw new AppError("No item with that id!", 404);
+    }
+
+    const message = `Removed from Favorite ${item.itemType === "song" ? "Songs" : "Movies"}`;
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        message,
+      },
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
