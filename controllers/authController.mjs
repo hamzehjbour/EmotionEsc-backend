@@ -1111,12 +1111,10 @@ export const forgetPassword = async (req, res, next) => {
 
     const resetToken = user.generateResetToken();
 
-    // console.log(resetToken);
-
     const twoFACode = user.generate2FA();
 
     user.twoFACode = twoFACode;
-    user.twoFACodeExpiresAt = Date.now() + 5 * 60 * 100;
+    user.twoFACodeExpiresAt = Date.now() + 5 * 60 * 1000;
 
     const html = html2FATemplate.replace("{{CODE}}", twoFACode);
     const message = `your 6-digit verification code: ${twoFACode}`;
