@@ -8,7 +8,7 @@ import {
   resetPassword,
   updateMyPassword,
   protect,
-  editProfile, 
+  editProfile,
 } from "../controllers/authController.mjs";
 
 const router = express.Router();

@@ -1110,15 +1110,16 @@ export const forgetPassword = async (req, res, next) => {
     }
 
     const resetToken = user.generateResetToken();
-    const encodedToken = encodeURIComponent(resetToken);
-    // const url = `http://127.0.0.1:4200/reset/${resetToken}`;
-    const message = `Your password reset url`;
 
     // console.log(resetToken);
 
-    const html = htmlResetTemplate
-      .replace("{{NAME}}", user.fullName.split(" ").at(0))
-      .replaceAll("{{RESET_TOKEN}}", encodedToken);
+    const twoFACode = user.generate2FA();
+
+    user.twoFACode = twoFACode;
+    user.twoFACodeExpiresAt = Date.now() + 5 * 60 * 100;
+
+    const html = html2FATemplate.replace("{{CODE}}", twoFACode);
+    const message = `your 6-digit verification code: ${twoFACode}`;
 
     await sendMail({
       email: req.body.email,
@@ -1132,7 +1133,8 @@ export const forgetPassword = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       data: {
-        message: "Reset token sent to email",
+        resetToken,
+        message: "Verification code sent to email",
       },
     });
   } catch (err) {
@@ -1142,23 +1144,42 @@ export const forgetPassword = async (req, res, next) => {
 
 export const resetPassword = async (req, res, next) => {
   try {
+    // console.log(req.params.token);
+
     const resetToken = createHash("sha256")
       .update(req.params.token)
       .digest("hex");
 
+    console.log(resetToken);
+
     const user = await User.findOne({
       passwordResetToken: resetToken,
-      PasswordResetTokenExpiresAt: { $gt: Date.now() },
+      passwordResetTokenExpiresAt: { $gt: Date.now() },
     });
+
+    console.log(user);
 
     if (!user) {
       throw new AppError("Incorrect or Invalid token", 400);
     }
 
+    if (+user.twoFACode !== +req.body.code) {
+      throw new AppError(
+        "Please enter the correct code sent to your email",
+        401,
+      );
+    }
+
+    if (user.twoFACodeExpiresAt < Date.now()) {
+      throw new AppError("Your code have expired", 401);
+    }
+
     user.password = req.body.password;
     user.confirmPassword = req.body.confirmPassword;
     user.passwordResetToken = undefined;
-    user.PasswordResetTokenExpiresAt = undefined;
+    user.passwordResetTokenExpiresAt = undefined;
+    user.twoFACode = undefined;
+    user.twoFACodeExpiresAt = undefined;
     await user.save();
 
     createSendToken(user, 200, res, "Reset password is successfull");

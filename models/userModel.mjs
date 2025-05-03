@@ -47,6 +47,9 @@ const userSchema = new mongoose.Schema({
 
   passwordResetTokenExpiresAt: Date,
 
+  twoFACode: Number,
+  twoFACodeExpiresAt: Date,
+
   linkToSpotify: {
     type: Boolean,
     default: false,
@@ -80,6 +83,14 @@ userSchema.methods.changedPasswordAfter = function (JwtTimestamp) {
   return false;
 };
 
+userSchema.methods.generate2FA = function () {
+  const code = (parseInt(randomBytes(3).toString("hex"), 16) % 1000000)
+    .toString(10)
+    .padStart(6, "0");
+
+  return code;
+};
+
 userSchema.methods.generateResetToken = function () {
   const resetToken = randomBytes(32).toString("hex");
 
@@ -87,7 +98,7 @@ userSchema.methods.generateResetToken = function () {
     .update(resetToken)
     .digest("hex");
 
-  this.PasswordResetTokenExpiresAt = Date.now() + 10 * 60 * 1000;
+  this.passwordResetTokenExpiresAt = Date.now() + 10 * 60 * 1000;
 
   return resetToken;
 };
