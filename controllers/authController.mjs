@@ -1,12 +1,17 @@
+/* eslint-disable camelcase */
 import { promisify } from "node:util";
 import { createHash } from "node:crypto";
+import queryString from "node:querystring";
 import jwt from "jsonwebtoken";
+
 import PendingSignup from "../models/pendingSignup.mjs";
 import User from "../models/userModel.mjs";
+
 import AppError from "../utils/AppError.mjs";
 import sendMail from "../utils/email.mjs";
 import sendTfaEmail from "../emails/tfaEmail.mjs";
 import sendWelcomeEmail from "../emails/welcomeEmail.mjs";
+import spotifyAccess from "../utils/spotifyAccess.mjs";
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -359,4 +364,55 @@ export const editProfile = async (req, res, next) => {
       user: updatedUser,
     },
   });
+};
+
+export const redirectToSpotify = (req, res) => {
+  const scopes = [
+    "user-read-email",
+    "user-read-private",
+    "user-library-read",
+    "user-library-modify",
+    "streaming",
+    "user-read-playback-state",
+    "user-modify-playback-state",
+  ];
+
+  const authUrl = `https://accounts.spotify.com/authorize?${queryString.stringify(
+    {
+      response_type: "code",
+      client_id: process.env.SPOTIFY_CLIENT_ID,
+      scope: scopes.join(" "),
+      redirect_uri: process.env.SPOTIFY_REDIRECT_URI,
+      state: req.user.id,
+    },
+  )}`;
+
+  res.redirect(authUrl);
+};
+
+export const handleSpotifyCallback = async (req, res, next) => {
+  try {
+    const { code, state } = req.params;
+
+    const { access_token, refresh_token, expires_in } =
+      await spotifyAccess(code);
+
+    const user = await User.findByIdAndUpdate(state, {
+      spotify: {
+        accessToken: access_token,
+        refreshToken: refresh_token,
+        tokenExpiresAt: Date.now() + expires_in * 1000,
+      },
+    });
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        message: "Spotify linked successfully. You may close this tab.",
+        user,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
 };

@@ -41,6 +41,12 @@ const userSchema = new mongoose.Schema({
     },
   },
 
+  spotify: {
+    accessToken: String,
+    refreshToken: String,
+    tokenExpiresAt: Date,
+  },
+
   passwordChangedAt: Date,
 
   passwordResetToken: String,

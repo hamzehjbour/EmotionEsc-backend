@@ -9,11 +9,16 @@ import {
   updateMyPassword,
   protect,
   editProfile,
+  redirectToSpotify,
+  handleSpotifyCallback,
 } from "../controllers/authController.mjs";
 
 const router = express.Router();
 
-router.get("/signup/resend", resend);
+router
+  .get("/signup/resend", resend)
+  .get("/login-spotify", protect, redirectToSpotify)
+  .get("/link-spotify", protect, handleSpotifyCallback);
 
 router
   .post("/signup/start", start)
