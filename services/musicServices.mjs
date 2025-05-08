@@ -5,14 +5,26 @@ headers.append("Content-Type", "application/x-www-form-urlencoded");
 
 let accessToken = "";
 let expiresIn = 3600;
+
 const emotionToGenresMap = {
-  happy: ["pop", "dance", "reggae"],
-  sad: ["blues", "acoustic", "singer-songwriter"],
-  angry: ["rock", "metal", "punk"],
-  fearful: ["ambient", "experimental", "soundtrack"],
-  disgusted: ["industrial", "hardcore"],
-  surprised: ["electronic", "alternative"],
-  neutral: ["classical", "jazz", "chill"],
+  happy: ["arab-pop", "arab-dance", "pop", "dance", "reggae"],
+  sad: [
+    "arabic-ballad",
+    "arabic-acoustic",
+    "blues",
+    "acoustic",
+    "singer-songwriter",
+  ],
+  angry: ["arabic-rap", "arabic-rock", "rock", "metal", "punk"],
+  fearful: ["arabic-instrumental", "ambient", "experimental", "soundtrack"],
+  disgusted: ["arabic-underground", "industrial", "hardcore"],
+  surprised: [
+    "arabic-fusion",
+    "arabic-alternative",
+    "electronic",
+    "alternative",
+  ],
+  neutral: ["arabic-chill", "tarab", "classical", "jazz", "chill"],
 };
 
 export const getAccessToken = async function () {
