@@ -11,6 +11,8 @@ import globalErrorHandler from "./controllers/errorController.mjs";
 
 const app = express();
 
+const allowedOrigins = ["https://127.0.0.1:4200", "https://localhost:4200"];
+
 if (process.env.NODE_ENV === "development") {
   // console.log(process.env.NODE_ENV);
   app.use(morgan("dev"));
@@ -21,9 +23,17 @@ app.use(cookieParser());
 app.use(express.json());
 
 // Implementing CORS
+
 app.use(
   cors({
-    origin: "https://localhost:4200",
+    origin: function (origin, callback) {
+      // allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   }),
 );
@@ -31,11 +41,16 @@ app.use(
 app.options(
   "*",
   cors({
-    origin: "https://localhost:4200",
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   }),
 );
-
 // Compress responses
 app.use(compression());
 

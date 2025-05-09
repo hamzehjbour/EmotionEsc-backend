@@ -387,23 +387,36 @@ export const redirectToSpotify = (req, res) => {
     },
   )}`;
 
-  res.redirect(authUrl);
+  res.status(200).json({
+    status: "success",
+    data: {
+      authUrl,
+    },
+  });
 };
 
 export const handleSpotifyCallback = async (req, res, next) => {
   try {
-    const { code, state } = req.params;
+    const { code, state } = req.query;
 
     const { access_token, refresh_token, expires_in } =
       await spotifyAccess(code);
 
-    const user = await User.findByIdAndUpdate(state, {
-      spotify: {
-        accessToken: access_token,
-        refreshToken: refresh_token,
-        tokenExpiresAt: Date.now() + expires_in * 1000,
+    const user = await User.findByIdAndUpdate(
+      state,
+      {
+        linkToSpotify: true,
+        spotify: {
+          accessToken: access_token,
+          refreshToken: refresh_token,
+          tokenExpiresAt: Date.now() + expires_in * 1000,
+        },
       },
-    });
+      {
+        new: true,
+        runValidators: false,
+      },
+    );
 
     res.status(200).json({
       status: "success",
