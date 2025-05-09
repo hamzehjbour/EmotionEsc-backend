@@ -398,6 +398,7 @@ export const handleSpotifyCallback = async (req, res, next) => {
       await spotifyAccess(code);
 
     const user = await User.findByIdAndUpdate(state, {
+      linkToSpotify: true,
       spotify: {
         accessToken: access_token,
         refreshToken: refresh_token,
