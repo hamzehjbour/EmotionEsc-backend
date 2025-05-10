@@ -41,6 +41,11 @@ const userSchema = new mongoose.Schema({
     },
   },
 
+  linkToSpotify: {
+    type: Boolean,
+    default: false,
+  },
+
   spotify: {
     accessToken: String,
     refreshToken: String,
@@ -55,11 +60,6 @@ const userSchema = new mongoose.Schema({
 
   twoFACode: Number,
   twoFACodeExpiresAt: Date,
-
-  linkToSpotify: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 userSchema.pre("save", async function (next) {

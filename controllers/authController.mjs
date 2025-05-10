@@ -11,7 +11,10 @@ import AppError from "../utils/AppError.mjs";
 import sendMail from "../utils/email.mjs";
 import sendTfaEmail from "../emails/tfaEmail.mjs";
 import sendWelcomeEmail from "../emails/welcomeEmail.mjs";
-import spotifyAccess from "../utils/spotifyAccess.mjs";
+import {
+  getAccessToken,
+  refreshAccessToken,
+} from "../utils/spotifyAccessHandler.mjs";
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -400,7 +403,7 @@ export const handleSpotifyCallback = async (req, res, next) => {
     const { code, state } = req.query;
 
     const { access_token, refresh_token, expires_in } =
-      await spotifyAccess(code);
+      await getAccessToken(code);
 
     const user = await User.findByIdAndUpdate(
       state,
@@ -422,6 +425,40 @@ export const handleSpotifyCallback = async (req, res, next) => {
       status: "success",
       data: {
         message: "Spotify linked successfully. You may close this tab.",
+        user,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const refreshSpotifyAccessToken = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+
+    const { access_token, refresh_token, expires_in } =
+      await refreshAccessToken(refreshToken);
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        spotify: {
+          accessToken: access_token,
+          refreshToken: refresh_token,
+          tokenExpiresAt: Date.now() + expires_in * 1000,
+        },
+      },
+      {
+        new: true,
+        runValidators: false,
+      },
+    );
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        message: "Spotify's access token refreshed successfully.",
         user,
       },
     });

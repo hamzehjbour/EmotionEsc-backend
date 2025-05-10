@@ -11,6 +11,7 @@ import {
   editProfile,
   redirectToSpotify,
   handleSpotifyCallback,
+  refreshSpotifyAccessToken,
 } from "../controllers/authController.mjs";
 
 const router = express.Router();
@@ -25,7 +26,8 @@ router
   .post("/signup/verify", verify)
   .post("/login", login)
   .post("/forget-password", forgetPassword)
-  .post("/edit-profile", protect, editProfile);
+  .post("/edit-profile", protect, editProfile)
+  .post("/refresh-spotify-token", protect, refreshSpotifyAccessToken);
 
 router
   .patch("/reset-password/:token", resetPassword)
