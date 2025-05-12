@@ -34,7 +34,7 @@ export const refreshAccessToken = async function name(refreshToken) {
     headers,
     body: new URLSearchParams({
       grant_type: "refresh_token",
-      refreshToken,
+      refresh_token: refreshToken,
     }),
   });
 

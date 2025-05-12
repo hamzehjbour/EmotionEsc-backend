@@ -445,7 +445,7 @@ export const refreshSpotifyAccessToken = async (req, res, next) => {
       {
         spotify: {
           accessToken: access_token,
-          refreshToken: refresh_token,
+          refreshToken: refresh_token || refreshToken,
           tokenExpiresAt: Date.now() + expires_in * 1000,
         },
       },
