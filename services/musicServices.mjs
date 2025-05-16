@@ -43,7 +43,6 @@ export const getAccessToken = async function () {
 
     accessToken = data.access_token;
     expiresIn = data.expires_in || 3600;
-    // console.log(data);
 
     setTimeout(getAccessToken, (expiresIn - 300) * 100);
   } catch (err) {
@@ -129,7 +128,7 @@ export const getTodaysTopMusic = async function (page = 1) {
     const statusCode = data.error.status || 500;
     const message = data.error.message || "Failed to fetch top music";
 
-    throw new AppError(message, statusCode); // Throw an error
+    throw new AppError(message, statusCode);
   }
 
   return { tracks };

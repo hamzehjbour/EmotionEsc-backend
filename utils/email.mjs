@@ -3,8 +3,6 @@ import nodemailer from "nodemailer";
 
 const sendMail = async (options) => {
   try {
-    // console.log("Sending email to:", options.email);
-
     let transporter;
 
     if (process.env.NODE_ENV === "production") {
@@ -35,9 +33,7 @@ const sendMail = async (options) => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    // console.log("Email sent:", info.messageId);
   } catch (error) {
-    // console.error("Failed to send email:", error);
     throw error;
   }
 };
