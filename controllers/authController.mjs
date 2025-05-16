@@ -9,7 +9,7 @@ import User from "../models/userModel.mjs";
 
 import AppError from "../utils/AppError.mjs";
 import sendMail from "../utils/email.mjs";
-import sendTfaEmail from "../emails/tfaEmail.mjs";
+import createTfaEmail from "../emails/tfaEmail.mjs";
 import sendWelcomeEmail from "../emails/welcomeEmail.mjs";
 import {
   getAccessToken,
@@ -32,8 +32,6 @@ const signToken = (id) => {
 
 const createSendToken = (user, statusCode, res, message) => {
   const token = signToken(user._id);
-
-  // console.log(token);
 
   res.cookie("jwt", token, {
     expires: new Date(
@@ -106,15 +104,6 @@ export const start = async (req, res, next) => {
     let pendingUser = new PendingSignup();
     const twoFACode = pendingUser.generate2FA();
 
-    const { html, message } = sendTfaEmail(twoFACode);
-
-    await sendMail({
-      email: req.body.email,
-      subject: "Email Verification",
-      message,
-      html,
-    });
-
     pendingUser = await PendingSignup.create({
       fullName: req.body.fullName,
       email: req.body.email,
@@ -122,6 +111,14 @@ export const start = async (req, res, next) => {
       confirmPassword: req.body.confirmPassword,
       twoFACode,
       codeExpiresAt: Date.now() + 5 * 60 * 1000,
+    });
+
+    const { html, message } = createTfaEmail(twoFACode);
+    await sendMail({
+      email: req.body.email,
+      subject: "Email Verification",
+      message,
+      html,
     });
 
     res.status(200).json({
@@ -204,7 +201,7 @@ export const resend = async (req, res, next) => {
     pendingUser.twoFACode = newtwoFACode;
     pendingUser.codeExpiresAt = newExpire;
 
-    const { html, message } = sendTfaEmail(newtwoFACode);
+    const { html, message } = createTfaEmail(newtwoFACode);
 
     await sendMail({
       email,
@@ -261,7 +258,7 @@ export const forgetPassword = async (req, res, next) => {
     user.twoFACode = twoFACode;
     user.twoFACodeExpiresAt = Date.now() + 5 * 60 * 1000;
 
-    const { html, message } = sendTfaEmail(twoFACode);
+    const { html, message } = createTfaEmail(twoFACode);
 
     await sendMail({
       email: req.body.email,
@@ -286,20 +283,14 @@ export const forgetPassword = async (req, res, next) => {
 
 export const resetPassword = async (req, res, next) => {
   try {
-    // console.log(req.params.token);
-
     const resetToken = createHash("sha256")
       .update(req.params.token)
       .digest("hex");
-
-    console.log(resetToken);
 
     const user = await User.findOne({
       passwordResetToken: resetToken,
       passwordResetTokenExpiresAt: { $gt: Date.now() },
     });
-
-    console.log(user);
 
     if (!user) {
       throw new AppError("Incorrect or Invalid token", 400);
@@ -351,22 +342,27 @@ export const updateMyPassword = async (req, res, next) => {
 };
 
 export const editProfile = async (req, res, next) => {
-  if (req.body.password || req.body.confirmPassword) {
-    return next(new AppError("Please use update my password route", 400));
+  try {
+    if (req.body.password || req.body.confirmPassword) {
+      return next(new AppError("Please use update my password route", 400));
+    }
+
+    const newbody = filterObj(req.body, "fullName", "email");
+    const updatedUser = await User.findByIdAndUpdate(req.user.id, newbody, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        message: "Successfully updated your profile",
+        user: updatedUser,
+      },
+    });
+  } catch (err) {
+    next(err);
   }
-
-  const newbody = filterObj(req.body, "fullName", "email");
-  const updatedUser = await User.findByIdAndUpdate(req.user.id, newbody, {
-    new: true,
-    runValidators: true,
-  });
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      user: updatedUser,
-    },
-  });
 };
 
 export const redirectToSpotify = (req, res) => {

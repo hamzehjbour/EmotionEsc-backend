@@ -7,24 +7,25 @@ let accessToken = "";
 let expiresIn = 3600;
 
 const emotionToGenresMap = {
-  happy: ["arab-pop", "arab-dance", "pop", "dance", "reggae"],
+  happy: ["dance", "arab-pop", "pop", "arab-dance", "reggae"],
   sad: [
-    "arabic-ballad",
-    "arabic-acoustic",
     "blues",
+    "arabic-ballad",
     "acoustic",
+    "arabic-acoustic",
     "singer-songwriter",
   ],
-  angry: ["arabic-rap", "arabic-rock", "rock", "metal", "punk"],
+  angry: ["rock", "arabic-rap", "metal", "arabic-rock", "punk"],
   fearful: ["arabic-instrumental", "ambient", "experimental", "soundtrack"],
   disgusted: ["arabic-underground", "industrial", "hardcore"],
   surprised: [
     "arabic-fusion",
-    "arabic-alternative",
     "electronic",
+    "arabic-alternative",
     "alternative",
   ],
-  neutral: ["arabic-chill", "tarab", "classical", "jazz", "chill"],
+  // neutral: ["arabic-chill", "classical", "tarab", "jazz", "chill"],
+  neutral: ["pop", "arab-pop", "dance", "arab-dance", "reggae"],
 };
 
 export const getAccessToken = async function () {
@@ -43,7 +44,6 @@ export const getAccessToken = async function () {
 
     accessToken = data.access_token;
     expiresIn = data.expires_in || 3600;
-    // console.log(data);
 
     setTimeout(getAccessToken, (expiresIn - 300) * 100);
   } catch (err) {
@@ -129,7 +129,7 @@ export const getTodaysTopMusic = async function (page = 1) {
     const statusCode = data.error.status || 500;
     const message = data.error.message || "Failed to fetch top music";
 
-    throw new AppError(message, statusCode); // Throw an error
+    throw new AppError(message, statusCode);
   }
 
   return { tracks };
