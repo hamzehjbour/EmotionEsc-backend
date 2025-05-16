@@ -1,7 +1,7 @@
 import AppError from "../utils/AppError.mjs";
 
 const handleDuplicateFieldsDB = (err) => {
-  const message = `Duplicate field value: ${err.keyValue.name}. Please use another value`;
+  const message = `Duplicate field value: ${err.keyValue.email}. Please use another value`;
 
   return new AppError(message, 400);
 };

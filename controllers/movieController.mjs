@@ -38,7 +38,6 @@ export const getPopular = async (req, res, next) => {
 
 export const getTopRated = async (req, res, next) => {
   try {
-    // console.log(req.query);
     const { page, lang } = req.query;
 
     const topMovies = await getTopRatedMovies(page, lang);
@@ -54,12 +53,9 @@ export const getTopRated = async (req, res, next) => {
 
 export const getDetails = async (req, res, next) => {
   try {
-    // console.log(req.params);
     const { lang } = req.query;
     const { id } = req.params;
     const details = await getMovieDetails(id, lang);
-
-    // console.log(details);
 
     res.status(200).json({
       status: "success",
