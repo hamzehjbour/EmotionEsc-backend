@@ -249,16 +249,12 @@ export const getMovieRecommendations = async function (
       .map((movieGenre) => movieGenre.id)
       .join("|");
 
-    // console.log(ids);
-
     url = url.concat(`&with_genres=${ids}`, `&sort_by=${sortBy}`);
   }
 
   const response = await fetch(url, options);
 
   const data = await response.json();
-
-  // console.log(data);
 
   if (data.success !== undefined) {
     const statusCode = data.status_code === 22 ? 400 : 500;
@@ -326,8 +322,6 @@ export const getMovieDetails = async function (movieID, lang = "en-US") {
   const trailers = videos.results.filter((res) => res.type === "Trailer");
 
   delete data.videos;
-
-  // console.log(details, posters);
 
   return { ...data, trailers };
 };

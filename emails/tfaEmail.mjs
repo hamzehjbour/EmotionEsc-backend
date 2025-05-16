@@ -256,11 +256,11 @@ const html2FATemplate = `
 </html>
 `;
 
-const sendTfaEmail = function (code) {
+const createTfaEmail = function (code) {
   const html = html2FATemplate.replace("{{CODE}}", code);
   const message = `your 6-digit verification code: ${code}`;
 
   return { html, message };
 };
 
-export default sendTfaEmail;
+export default createTfaEmail;

@@ -15,6 +15,12 @@ const pendingSignupSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      validate: {
+        validator: function (value) {
+          return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
+        },
+        message: "Please provide a valid email address",
+      },
     },
     password: {
       type: String,

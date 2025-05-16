@@ -14,7 +14,6 @@ const app = express();
 const allowedOrigins = ["https://127.0.0.1:4200", "https://localhost:4200"];
 
 if (process.env.NODE_ENV === "development") {
-  // console.log(process.env.NODE_ENV);
   app.use(morgan("dev"));
 }
 
