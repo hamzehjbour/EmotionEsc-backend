@@ -304,7 +304,7 @@ export const getTopRatedMovies = async function (page = 1, lang = "en-US") {
 
 export const getMovieDetails = async function (movieID, lang = "en-US") {
   const response = await fetch(
-    `${process.env.TMDB_URL}/movie/${movieID}?append_to_response=videos`,
+    `${process.env.TMDB_URL}/movie/${movieID}?append_to_response=videos,images,credits`,
     options,
   );
 
@@ -319,9 +319,31 @@ export const getMovieDetails = async function (movieID, lang = "en-US") {
 
   const videos = data.videos;
 
+  data.images = data.images.logos
+    .filter((logo) => logo.iso_3166_1 === "US")
+    .sort((a, b) => b.width - a.width)
+    .at(0);
   const trailers = videos.results.filter((res) => res.type === "Trailer");
 
+  data.actors = data.credits.cast;
+
+  delete data.credits;
   delete data.videos;
 
-  return { ...data, trailers };
+  return {
+    backdrop_path: data.backdrop_path,
+    overview: data.overview,
+    rating: data.vote_average.toFixed(1),
+    genres: data.genres,
+    id: data.id,
+    original_title: data.original_title,
+    poster_path: data.poster_path,
+    release_date: data.release_date,
+    runtime: data.runtime,
+    status: data.status,
+    title: data.title,
+    images: data.images,
+    actors: data.actors,
+    trailers,
+  };
 };

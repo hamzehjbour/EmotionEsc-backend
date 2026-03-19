@@ -11,7 +11,11 @@ import globalErrorHandler from "./controllers/errorController.mjs";
 
 const app = express();
 
-const allowedOrigins = ["https://127.0.0.1:4200", "https://localhost:4200"];
+const allowedOrigins = [
+  "https://127.0.0.1:4200",
+  "https://localhost:4200",
+  "http://localhost:3000",
+];
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));

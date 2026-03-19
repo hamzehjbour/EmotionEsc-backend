@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import mongoose from "mongoose";
 import app from "./app.mjs";
-import { getAccessToken } from "./services/musicServices.mjs";
+// import { getAccessToken } from "./services/musicServices.mjs";
 
 process.on("uncaughtException", (err) => {
   console.error("UNCAUGHTEXCEPTION! 💥 Shutting down...");
@@ -10,9 +10,9 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 
-getAccessToken();
+// getAccessToken();
 
 const DB = process.env.DB.replace("<db_password>", process.env.DB_PASSWORD);
 
